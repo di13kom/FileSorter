@@ -24,14 +24,14 @@ internal partial class Program
         rootCommand.Options.Add(bytesToWrite);
 
 
-        rootCommand.SetAction(parseResult =>
+        rootCommand.SetAction(async parseResult =>
         {
             string parsedFile = parseResult.GetValue(fileToWrite)!;//Option is required. not null
             int bytesCount = parseResult.GetValue(bytesToWrite);
 
             OneByteCharRandomStringCreator randomStringCreator = new OneByteCharRandomStringCreator(bytesCount);
 
-            WriteFile(parsedFile!, 0, randomStringCreator);
+            await WriteFileAsync(parsedFile!, 0, randomStringCreator);
             return 0;
         });
 
@@ -39,7 +39,7 @@ internal partial class Program
         return parseResult.Invoke();
     }
 
-    private static async Task WriteFile(string parsedFile, long offset, IStringCreator stringCreator)
+    private static async Task WriteFileAsync(string parsedFile, long offset, IStringCreator stringCreator)
     {
         int i = 1;
         const int BufferFlushSum = 200;//buffering. Experimental.
@@ -58,6 +58,5 @@ internal partial class Program
                 await streamWriter.FlushAsync();
             }
         }
-
     }
 }
