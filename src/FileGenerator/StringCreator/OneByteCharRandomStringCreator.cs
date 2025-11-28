@@ -68,7 +68,7 @@ public class OneByteCharRandomStringCreator : IStringCreator
         #region Repetition strings
         if (idx % RepeatFrequency == 0)
         {
-            var cnt = RndDevice.Next(0, RepeatCountElements - 1);
+            var cnt = RndDevice.Next(0, RepeatCountElements);
             sb.Append(RepeatedWordsQueue.ElementAt(cnt));
             return;
         }

@@ -7,5 +7,5 @@ public interface IFileSorter
     /// </summary>
     /// <param name="offset"></param>
     /// <returns></returns>
-    Task SortFileAsync(long offset);
+    Task SortFileAsync(long offset, CancellationToken token);
 }

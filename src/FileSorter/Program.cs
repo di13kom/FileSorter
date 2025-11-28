@@ -24,9 +24,11 @@ internal class Program
                 return -1;
             }
             var comparer = new CustomLineComparer();
-            IFileSorter sortFile = new BubbleFileSorter(parsedFile, comparer);
+            ICanSort sorter = new MergeSort(comparer);
+            var ctx = new CancellationTokenSource().Token;
+            IFileSorter sortFile = new MergeFileSorter(parsedFile, sorter);
 
-            await sortFile.SortFileAsync(0);
+            await sortFile.SortFileAsync(0, ctx);
             return 0;
         });
 
