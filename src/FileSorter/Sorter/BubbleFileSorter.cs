@@ -3,6 +3,9 @@ using FileSorter.Comparer;
 
 namespace FileSorter.Sorter;
 
+/// <summary>
+/// Sort file with bubble sorting algorithm.
+/// </summary>
 public class BubbleFileSorter : IFileSorter
 {
     /// <summary>
@@ -28,37 +31,32 @@ public class BubbleFileSorter : IFileSorter
         using StreamReader streamReader = new StreamReader(fileStream);
         using StreamWriter streamWriter = new StreamWriter(fileStream);
 
-        //TODO:RemoveIt.
-        const int bufferSize = 48; // read the file in 4KB chunks
-        var builder = new StringBuilder();
-        char[] buffer = new char[bufferSize];
-        int bytesRead;
-        //
+        long preString0position = 0;
+        long preString1Position = 0;
+        long lastSortedPosition = -1;
 
-        long position0 = 0;
-        long position1 = 0;
-        long endPosition = -1;
+        preString0position = fileStream.Position;
+        var string0 = await streamReader.ReadLineAsync(token);
+        if (string0 is null)
+            return;
+        preString1Position = preString0position + string0.Length + Environment.NewLine.Length;
         while (true)
         {
-            position0 = fileStream.Position;
-            var string0 = await streamReader.ReadLineAsync();
-            position1 = position0 + string0.Length + Environment.NewLine.Length;
+            var string1 = await streamReader.ReadLineAsync(token);
+            var curPos = preString1Position + string1?.Length + Environment.NewLine.Length ?? 0;
 
-            //TODO:RemoveIt.
-            // // bytesRead = await streamReader.ReadBlockAsync(buffer, 0, buffer.Length);
-            // // var position1 = bytesRead;
-            // builder.Append(buffer, 0, bytesRead);
-
-            var string1 = await streamReader.ReadLineAsync();
-
-            if (string1 is null || position1 == endPosition)
+            if (string1 is null || curPos == lastSortedPosition)
             {
                 if (IsReplaceOccured == true)
                 {
+                    lastSortedPosition = preString1Position;
                     IsReplaceOccured = false;
                     fileStream.Seek(0, SeekOrigin.Begin);
                     streamReader.DiscardBufferedData();
-                    endPosition = position0;
+
+                    string0 = await streamReader.ReadLineAsync(token);
+                    preString0position = 0;
+                    preString1Position = preString0position + string0.Length + Environment.NewLine.Length;
                     continue;
                 }
                 else
@@ -68,26 +66,28 @@ public class BubbleFileSorter : IFileSorter
 
             }
 
-            if (LineComparer.Compare(string0.AsSpan(), string1.AsSpan()) > 0)
+            if (LineComparer.Compare(string0, string1) > 0)
             {
                 IsReplaceOccured = true;
-                fileStream.Seek(position0, SeekOrigin.Begin);
+                fileStream.Seek(preString0position, SeekOrigin.Begin);
 
                 await streamWriter.WriteLineAsync(string1);
                 await streamWriter.WriteLineAsync(string0);
-                streamWriter.Flush();
+                await streamWriter.FlushAsync(token);
                 if (string1.Length > string0.Length)
                 {
-                    position1 += string1.Length - string0.Length;
+                    preString1Position += string1.Length - string0.Length;
                 }
                 else if (string1.Length < string0.Length)
                 {
-                    position1 -= string0.Length - string1.Length;
+                    preString1Position -= string0.Length - string1.Length;
                 }
+                string1 = string0;
+                streamReader.DiscardBufferedData();
             }
-            fileStream.Seek(position1, SeekOrigin.Begin);
-            streamReader.DiscardBufferedData();
-            // fileStream.Position = position1;
+            string0 = string1;
+            preString0position = preString1Position;
+            preString1Position = curPos;
         }
     }
 }

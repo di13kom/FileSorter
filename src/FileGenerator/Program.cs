@@ -1,5 +1,5 @@
 ﻿using System.CommandLine;
-using System.Threading.Tasks;
+using FileGenerator.Generator;
 using FileGenerator.StringCreator;
 
 internal partial class Program
@@ -29,9 +29,11 @@ internal partial class Program
             string parsedFile = parseResult.GetValue(fileToWrite)!;//Option is required. not null
             int bytesCount = parseResult.GetValue(bytesToWrite);
 
-            OneByteCharRandomStringCreator randomStringCreator = new OneByteCharRandomStringCreator(bytesCount);
+            IStringCreator randomStringCreator = new OneByteCharRandomStringCreator(bytesCount);
 
-            await WriteFileAsync(parsedFile!, 0, randomStringCreator);
+            var writer = new RandomStringFileGenerator(randomStringCreator, parsedFile);
+
+            await writer.WriteFileAsync();
             return 0;
         });
 
@@ -39,24 +41,4 @@ internal partial class Program
         return parseResult.Invoke();
     }
 
-    private static async Task WriteFileAsync(string parsedFile, long offset, IStringCreator stringCreator)
-    {
-        int i = 1;
-        const int BufferFlushSum = 200;//buffering. Experimental.
-        using FileStream fileStream = new FileStream(parsedFile, FileMode.Create, FileAccess.Write, FileShare.Write);
-        fileStream.Seek(offset, SeekOrigin.Begin);
-
-        using StreamWriter streamWriter = new StreamWriter(fileStream);
-
-        foreach (var item in stringCreator.GetLines())
-        {
-            await streamWriter.WriteLineAsync(item);
-
-            //TODO: Fix
-            if (i++ % BufferFlushSum == 0)
-            {
-                await streamWriter.FlushAsync();
-            }
-        }
-    }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using FileGenerator.StringCreator;
 
-namespace FileGenerator.UnitTests;
+namespace FileGenerator.UnitTests.StringCreator;
 
 public class OneByteCharRandomStringCreatorTests
 {
@@ -20,7 +20,6 @@ public class OneByteCharRandomStringCreatorTests
         foreach (var item in _oneByteCharRandomStringCreator.GetLines())
         {
             Assert.That(item, Does.Match(OneByteCharRandomStringCreator.LineFormat));
-            Debug.WriteLine(item);
         }
     }
 
