@@ -26,9 +26,9 @@ internal class Program
             var comparer = new CustomLineComparer();
             ICanSort sorter = new MergeSort(comparer);
             var ctx = new CancellationTokenSource().Token;
-            IFileSorter sortFile = new MergeFileSorter(parsedFile, sorter);
+            MergeFileSorter sortFile = new MergeFileSorter(parsedFile, sorter);
 
-            await sortFile.SortFileAsync(0, ctx);
+            await sortFile.SortFileAsync(ctx);
             return 0;
         });
 

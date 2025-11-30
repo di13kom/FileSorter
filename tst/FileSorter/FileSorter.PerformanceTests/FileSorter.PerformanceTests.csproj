@@ -11,4 +11,12 @@
     <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\FileSorter\FileSorter.csproj" />
+  </ItemGroup>
+
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="sampleTestFile.txt" DestinationFolder="$(OutDir)" />
+  </Target>
+
 </Project>

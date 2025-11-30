@@ -1,6 +1,3 @@
-using FileSorter.Comparer;
-using FileSorter.Extension;
-
 namespace FileSorter.Sorter;
 
 public class MergeFileSorter : IFileSorter
@@ -8,7 +5,9 @@ public class MergeFileSorter : IFileSorter
     /// <summary>
     /// Whether create subdirectories for temp file or not.
     /// </summary>
-    private readonly bool IsUseDirectoryToSaveTempFiles = true;
+    /// <remarks>`true` value doesn't work with benchmark.
+    /// </remarks>
+    private readonly bool IsUseDirectoryToSaveTempFiles = false;
 
     /// <summary>
     /// File name for sorting. Input parameter.
@@ -31,7 +30,7 @@ public class MergeFileSorter : IFileSorter
         Sorter = sorter ?? throw new ArgumentNullException(nameof(sorter));
     }
 
-    public async Task SortFileAsync(long offset, CancellationToken token)
+    public async Task SortFileAsync(CancellationToken token)
     {
         await SplitFile(SplitFileLength);
 

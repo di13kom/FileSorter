@@ -1,0 +1,20 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/FileGenerator/FileGenerator.csproj" />
+    <Project Path="src/FileSorter/FileSorter.csproj" />
+  </Folder>
+  <Folder Name="/tst/" />
+  <Folder Name="/tst/FileGenerator/">
+    <Project Path="tst/FileGenerator/FileGenerator.PerformanceTests/FileGenerator.PerformanceTests.csproj" />
+    <Project Path="tst/FileGenerator/FileGenerator.UnitTests/FileGenerator.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tst/FileSorter/">
+    <Project Path="tst/FileSorter/FileSorter.PerformanceTests/FileSorter.PerformanceTests.csproj" />
+    <Project Path="tst/FileSorter/FileSorter.UnitTests/FileSorter.UnitTests.csproj" />
+  </Folder>
+</Solution>

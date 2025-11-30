@@ -4,7 +4,7 @@ using FileSorter.Comparer;
 namespace FileSorter.Sorter;
 
 /// <summary>
-/// Sort file with bubble sorting algorithm.
+/// Sort file with bubble sorting algorithm.Sort file in-place.
 /// </summary>
 public class BubbleFileSorter : IFileSorter
 {
@@ -12,6 +12,11 @@ public class BubbleFileSorter : IFileSorter
     /// File name for sorting.
     /// </summary>
     private readonly string FileName;
+
+    /// <summary>
+    /// Start file position offset.
+    /// </summary>
+    private readonly int StartFileOffset = 0;
 
     private readonly ICustomLineComparer LineComparer;
 
@@ -22,17 +27,17 @@ public class BubbleFileSorter : IFileSorter
     }
 
     /// <inheritdoc/>
-    public async Task SortFileAsync(long offset, CancellationToken token)
+    public async Task SortFileAsync(CancellationToken token)
     {
         bool IsReplaceOccured = true;
         using FileStream fileStream = new FileStream(FileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
-        fileStream.Seek(offset, SeekOrigin.Begin);
+        fileStream.Seek(StartFileOffset, SeekOrigin.Begin);
 
         using StreamReader streamReader = new StreamReader(fileStream);
         using StreamWriter streamWriter = new StreamWriter(fileStream);
 
-        long preString0position = 0;
-        long preString1Position = 0;
+        long preString0position = StartFileOffset;
+        long preString1Position = StartFileOffset;
         long lastSortedPosition = -1;
 
         preString0position = fileStream.Position;
@@ -51,11 +56,11 @@ public class BubbleFileSorter : IFileSorter
                 {
                     lastSortedPosition = preString1Position;
                     IsReplaceOccured = false;
-                    fileStream.Seek(0, SeekOrigin.Begin);
+                    fileStream.Seek(StartFileOffset, SeekOrigin.Begin);
                     streamReader.DiscardBufferedData();
 
                     string0 = await streamReader.ReadLineAsync(token);
-                    preString0position = 0;
+                    preString0position = StartFileOffset;
                     preString1Position = preString0position + string0.Length + Environment.NewLine.Length;
                     continue;
                 }
