@@ -39,7 +39,7 @@ public class MergeFileSorter : IFileSorter
 
     private async Task MergeSortFiles(int level, CancellationToken token)
     {
-        string directoryPattern = IsUseDirectoryToSaveTempFiles ? Path.Combine(Path.GetDirectoryName(FileName), $"{GetTempLevelDirectory(level)}") : Path.GetDirectoryName(FileName);
+        string directoryPattern = IsUseDirectoryToSaveTempFiles ? Path.Combine(Path.GetDirectoryName(FileName)!, $"{GetTempLevelDirectory(level)}") : Path.GetDirectoryName(FileName)!;
         var targetFiles = Directory.GetFiles(directoryPattern, $"{Path.GetFileName(PartialFileName)}*");
 
         if (targetFiles.Length == 1)
@@ -49,7 +49,6 @@ public class MergeFileSorter : IFileSorter
             Directory.CreateDirectory($"{GetTempLevelDirectory(level + 1)}");
 
         int halfLength = targetFiles.Length / 2;
-        // for (int i = 0; i < halfLength; i++)
         await Parallel.ForAsync(0, halfLength, async (i, token) =>
         {
             string file0 = targetFiles[i * 2];
@@ -81,9 +80,9 @@ public class MergeFileSorter : IFileSorter
     /// <param name="level">Level name.</param>
     private void MoveFileToLevelUpDirecotry(string targetFileName, int level)
     {
-        var path = Path.GetDirectoryName(targetFileName);
-        var fileName = Path.GetFileName(targetFileName);
-        var fullPath = IsUseDirectoryToSaveTempFiles ? Path.Combine(path[..path.LastIndexOf(Path.DirectorySeparatorChar)], GetTempLevelDirectory(level), fileName) : fileName;
+        string? path = Path.GetDirectoryName(targetFileName);
+        string? fileName = Path.GetFileName(targetFileName);
+        var fullPath = IsUseDirectoryToSaveTempFiles ? Path.Combine(path![..path!.LastIndexOf(Path.DirectorySeparatorChar)], GetTempLevelDirectory(level), fileName) : fileName;
 
         File.Move(targetFileName, fullPath);
     }
@@ -96,8 +95,8 @@ public class MergeFileSorter : IFileSorter
         string fullPath = IsUseDirectoryToSaveTempFiles ? Path.Combine(GetTempLevelDirectory(level + 1), fileName) : fileName;
         using var streamWriter = new StreamWriter(fullPath);
 
-        string file0String = await streamReaderfile0.ReadLineAsync();
-        string file1String = await streamReaderfile1.ReadLineAsync();
+        string? file0String = await streamReaderfile0.ReadLineAsync();
+        string? file1String = await streamReaderfile1.ReadLineAsync();
 
         while (file0String != null || file1String != null)
         {

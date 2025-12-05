@@ -8,12 +8,12 @@ public class RandomStringFileGenerator
     /// <summary>
     /// String creator.
     /// </summary>
-    private readonly IStringCreator StringCreator;
+    private readonly IStringCreator _stringCreator;
 
     /// <summary>
     /// File name for sorting. Input parameter.
     /// </summary>
-    private readonly string FileName;
+    private readonly string _fileName;
 
     /// <summary>
     /// buffering. Experimental.
@@ -22,23 +22,22 @@ public class RandomStringFileGenerator
 
     public RandomStringFileGenerator(IStringCreator stringCreator, string fileName)
     {
-        StringCreator = stringCreator;
-        FileName = fileName;
+        _stringCreator = stringCreator;
+        _fileName = fileName;
     }
 
     public async Task WriteFileAsync()
     {
         int i = 1;
-        using FileStream fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Write);
+        using FileStream fileStream = new FileStream(_fileName, FileMode.Create, FileAccess.Write, FileShare.Write);
         fileStream.Seek(0, SeekOrigin.Begin);
 
         using StreamWriter streamWriter = new StreamWriter(fileStream);
 
-        foreach (var item in StringCreator.GetLines())
+        foreach (var item in _stringCreator.GetLines())
         {
             await streamWriter.WriteLineAsync(item);
 
-            //TODO: Fix
             if (i++ % BufferFlushSum == 0)
             {
                 await streamWriter.FlushAsync();

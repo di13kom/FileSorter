@@ -10,7 +10,7 @@ public class OneByteCharRandomStringCreator : IStringCreator
     /// <summary>
     /// Line format regex.
     /// </summary>
-    public static string LineFormat = @"\d{1,}\.\s\w+";
+    public static string LineFormat => @"\d{1,}\.\s\w+";
 
     /// <summary>
     /// Frequency repeating operation.
@@ -25,19 +25,19 @@ public class OneByteCharRandomStringCreator : IStringCreator
     /// <summary>
     /// Count bytes.
     /// </summary>
-    private readonly int BytesCount;
-    private readonly Random RndDevice;
+    private readonly int _bytesCount;
+    private readonly Random _rndDevice;
     
     /// <summary>
     /// Repeated words queue.
     /// </summary>
-    private readonly List<string> RepeatedWordsQueue;
+    private readonly List<string> _repeatedWordsQueue;
 
     public OneByteCharRandomStringCreator(int bytesCount)
     {
-        BytesCount = bytesCount;
-        RndDevice = new Random();
-        RepeatedWordsQueue = [];
+        _bytesCount = bytesCount;
+        _rndDevice = new Random();
+        _repeatedWordsQueue = [];
     }
 
     /// <inheritdoc/>
@@ -55,7 +55,7 @@ public class OneByteCharRandomStringCreator : IStringCreator
             currentBytes += sb.Length + Environment.NewLine.Length;//sb.length bytes + \r\n symbols
             yield return sb.ToString();
         }
-        while (currentBytes <= BytesCount);
+        while (currentBytes <= _bytesCount);
     }
 
     /// <summary>
@@ -68,13 +68,13 @@ public class OneByteCharRandomStringCreator : IStringCreator
         #region Repetition strings
         if (idx % RepeatFrequency == 0)
         {
-            var cnt = RndDevice.Next(0, RepeatCountElements);
-            sb.Append(RepeatedWordsQueue.ElementAt(cnt));
+            var cnt = _rndDevice.Next(0, RepeatCountElements);
+            sb.Append(_repeatedWordsQueue.ElementAt(cnt));
             return;
         }
         #endregion
 
-        var vl = RndDevice.NextInt64(1, long.MaxValue);
+        var vl = _rndDevice.NextInt64(1, long.MaxValue);
         while (vl > 0)
         {
             var curValue = vl % 100;//
@@ -83,7 +83,7 @@ public class OneByteCharRandomStringCreator : IStringCreator
         }
         if (idx <= RepeatCountElements)//push RepeatCountElements to RepeatWordQueue
         {
-            RepeatedWordsQueue.Add(sb.ToString());
+            _repeatedWordsQueue.Add(sb.ToString());
         }
     }
 }

@@ -11,26 +11,26 @@ public class BubbleFileSorter : IFileSorter
     /// <summary>
     /// File name for sorting.
     /// </summary>
-    private readonly string FileName;
+    private readonly string _fileName;
 
     /// <summary>
     /// Start file position offset.
     /// </summary>
-    private readonly int StartFileOffset = 0;
+    private const int StartFileOffset = 0;
 
-    private readonly ICustomLineComparer LineComparer;
+    private readonly ICustomLineComparer _lineComparer;
 
     public BubbleFileSorter(string parsedFile, ICustomLineComparer lineComparer)
     {
-        FileName = parsedFile ?? throw new ArgumentNullException(nameof(parsedFile));
-        LineComparer = lineComparer ?? throw new ArgumentNullException(nameof(lineComparer));
+        _fileName = parsedFile ?? throw new ArgumentNullException(nameof(parsedFile));
+        _lineComparer = lineComparer ?? throw new ArgumentNullException(nameof(lineComparer));
     }
 
     /// <inheritdoc/>
     public async Task SortFileAsync(CancellationToken token)
     {
         bool IsReplaceOccured = true;
-        using FileStream fileStream = new FileStream(FileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+        using FileStream fileStream = new FileStream(_fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
         fileStream.Seek(StartFileOffset, SeekOrigin.Begin);
 
         using StreamReader streamReader = new StreamReader(fileStream);
@@ -41,13 +41,13 @@ public class BubbleFileSorter : IFileSorter
         long lastSortedPosition = -1;
 
         preString0position = fileStream.Position;
-        var string0 = await streamReader.ReadLineAsync(token);
+        string? string0 = await streamReader.ReadLineAsync(token);
         if (string0 is null)
             return;
         preString1Position = preString0position + string0.Length + Environment.NewLine.Length;
         while (true)
         {
-            var string1 = await streamReader.ReadLineAsync(token);
+            string? string1 = await streamReader.ReadLineAsync(token);
             var curPos = preString1Position + string1?.Length + Environment.NewLine.Length ?? 0;
 
             if (string1 is null || curPos == lastSortedPosition)
@@ -61,7 +61,7 @@ public class BubbleFileSorter : IFileSorter
 
                     string0 = await streamReader.ReadLineAsync(token);
                     preString0position = StartFileOffset;
-                    preString1Position = preString0position + string0.Length + Environment.NewLine.Length;
+                    preString1Position = preString0position + string0!.Length + Environment.NewLine.Length;
                     continue;
                 }
                 else
@@ -71,7 +71,7 @@ public class BubbleFileSorter : IFileSorter
 
             }
 
-            if (LineComparer.Compare(string0, string1) > 0)
+            if (_lineComparer.Compare(string0, string1) > 0)
             {
                 IsReplaceOccured = true;
                 fileStream.Seek(preString0position, SeekOrigin.Begin);

@@ -4,14 +4,14 @@ using FileSorter.Comparer;
 
 public class MergeSort : ICanSort
 {
-    private readonly ICustomLineComparer LineComparer;
+    private readonly ICustomLineComparer _lineComparer;
 
     public MergeSort(ICustomLineComparer lineComparer)
     {
-        LineComparer = lineComparer ?? throw new ArgumentNullException(nameof(lineComparer));
+        _lineComparer = lineComparer ?? throw new ArgumentNullException(nameof(lineComparer));
     }
 
-    public int Compare(string string0, string string1) => LineComparer.Compare(string0, string1);
+    public int Compare(string string0, string string1) => _lineComparer.Compare(string0, string1);
 
     public List<string> Sort([DisallowNull] List<string> stringsQueue)
     {
@@ -29,7 +29,7 @@ public class MergeSort : ICanSort
         }
         if (length == 2)
         {
-            if (LineComparer.Compare(stringsQueue[0], stringsQueue[1]) > 0)
+            if (_lineComparer.Compare(stringsQueue[0], stringsQueue[1]) > 0)
             {
                 return [stringsQueue[1], stringsQueue[0]];
             }
@@ -62,7 +62,7 @@ public class MergeSort : ICanSort
             {
                 retVal.Add(stringsList0.ElementAt(curlist0Idx++));
             }
-            else if (LineComparer.Compare(stringsList0.ElementAt(curlist0Idx), stringsList1.ElementAt(curlist1Idx)) > 0)
+            else if (_lineComparer.Compare(stringsList0.ElementAt(curlist0Idx), stringsList1.ElementAt(curlist1Idx)) > 0)
             {
                 retVal.Add(stringsList1.ElementAt(curlist1Idx++));
             }

@@ -7,14 +7,14 @@ namespace FileSorter.UnitTests.Sorter;
 
 public class BubbleFileSorterUnitTests
 {
-    private readonly string bubblePrefix = "bb_";
-    private readonly string PatternFileName = "sampleTestFile.txt";
-    private readonly string PatternSortedFileName = "sampleTestFile_sorted.txt";
+    private readonly string _bubblePrefix = "bb_";
+    private readonly string _patternFileName = "sampleTestFile.txt";
+    private readonly string _patternSortedFileName = "sampleTestFile_sorted.txt";
     private string GetPath(string fileName) => Path.Combine(TestContext.CurrentContext.WorkDirectory, fileName);
     [SetUp]
     public void Setup()
     {
-        File.Copy(GetPath(PatternFileName), GetPath($"{bubblePrefix}{PatternFileName}"), true);
+        File.Copy(GetPath(_patternFileName), GetPath($"{_bubblePrefix}{_patternFileName}"), true);
     }
 
     [Test]
@@ -22,9 +22,9 @@ public class BubbleFileSorterUnitTests
     {
         ICustomLineComparer comparer = new CustomLineComparer();
         var ctx = new CancellationTokenSource().Token;
-        IFileSorter fileSorter = new BubbleFileSorter(GetPath($"{bubblePrefix}{PatternFileName}"), comparer);
+        IFileSorter fileSorter = new BubbleFileSorter(GetPath($"{_bubblePrefix}{_patternFileName}"), comparer);
         await fileSorter.SortFileAsync(ctx).ConfigureAwait(false);
 
-        FileAssert.AreEqual(GetPath($"{bubblePrefix}{PatternFileName}"), GetPath(PatternSortedFileName));
+        FileAssert.AreEqual(GetPath($"{_bubblePrefix}{_patternFileName}"), GetPath(_patternSortedFileName));
     }
 }
