@@ -7,10 +7,6 @@ using System.Text;
 /// </summary>
 public class OneByteCharRandomStringCreator : IStringCreator
 {
-    /// <summary>
-    /// Line format regex.
-    /// </summary>
-    public static string LineFormat => @"\d{1,}\.\s\w+";
 
     /// <summary>
     /// Frequency repeating operation.

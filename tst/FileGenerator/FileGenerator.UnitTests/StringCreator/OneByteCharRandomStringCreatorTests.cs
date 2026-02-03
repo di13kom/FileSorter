@@ -5,6 +5,10 @@ namespace FileGenerator.UnitTests.StringCreator;
 
 public class OneByteCharRandomStringCreatorTests
 {
+    /// <summary>
+    /// Line format regex.
+    /// </summary>
+    public static string LineFormat => @"\d{1,}\.\s\w+";
     private const int BytesCount = 500;
     private IStringCreator _oneByteCharRandomStringCreator;
 
@@ -19,7 +23,7 @@ public class OneByteCharRandomStringCreatorTests
     {
         foreach (var item in _oneByteCharRandomStringCreator.GetLines())
         {
-            Assert.That(item, Does.Match(OneByteCharRandomStringCreator.LineFormat));
+            Assert.That(item, Does.Match(LineFormat));
         }
     }
 
