@@ -10,7 +10,7 @@ public class BubbleFileSorterUnitTests
     private readonly string _bubblePrefix = "bb_";
     private readonly string _patternFileName = "sampleTestFile.txt";
     private readonly string _patternSortedFileName = "sampleTestFile_sorted.txt";
-    private string GetPath(string fileName) => Path.Combine(TestContext.CurrentContext.WorkDirectory, fileName);
+    private static string GetPath(string fileName) => Path.Combine(TestContext.CurrentContext.WorkDirectory, fileName);
     [SetUp]
     public void Setup()
     {

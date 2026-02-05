@@ -15,33 +15,21 @@ public class RandomStringFileGenerator
     /// </summary>
     private readonly string _fileName;
 
-    /// <summary>
-    /// buffering. Experimental.
-    /// </summary>
-    const int BufferFlushSum = 200;
-
     public RandomStringFileGenerator(IStringCreator stringCreator, string fileName)
     {
-        _stringCreator = stringCreator;
-        _fileName = fileName;
+        _stringCreator = stringCreator ?? throw new ArgumentNullException(nameof(stringCreator));
+        _fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
     }
 
-    public async Task WriteFileAsync()
+    public async Task WriteFileAsync(CancellationToken cancellationToken = default)
     {
-        int i = 1;
-        using FileStream fileStream = new FileStream(_fileName, FileMode.Create, FileAccess.Write, FileShare.Write);
-        fileStream.Seek(0, SeekOrigin.Begin);
-
-        using StreamWriter streamWriter = new StreamWriter(fileStream);
-
-        foreach (var item in _stringCreator.GetLines())
+        using var fileStream = new FileStream(_fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+        using var streamWriter = new StreamWriter(fileStream);
+        
+        foreach (var line in _stringCreator.GetLines())
         {
-            await streamWriter.WriteLineAsync(item);
-
-            if (i++ % BufferFlushSum == 0)
-            {
-                await streamWriter.FlushAsync();
-            }
+            cancellationToken.ThrowIfCancellationRequested();
+            await streamWriter.WriteLineAsync(line);
         }
     }
 }

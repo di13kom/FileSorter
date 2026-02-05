@@ -63,7 +63,7 @@ public class MergeFileSorter : IFileSorter
         );
         if (targetFiles.Length % 2 != 0)
         {
-            MoveFileToLevelUpDirecotry(targetFiles[^1], level + 1);//last file when odd files count must be moved to level+1 directory.
+            MoveFileToLevelUpDirectory(targetFiles[^1], level + 1);//last file when odd files count must be moved to level+1 directory.
         }
 
         if (IsUseDirectoryToSaveTempFiles)
@@ -78,7 +78,7 @@ public class MergeFileSorter : IFileSorter
     /// </summary>
     /// <param name="targetFileName">File name.</param>
     /// <param name="level">Level name.</param>
-    private void MoveFileToLevelUpDirecotry(string targetFileName, int level)
+    private void MoveFileToLevelUpDirectory(string targetFileName, int level)
     {
         string? path = Path.GetDirectoryName(targetFileName);
         string? fileName = Path.GetFileName(targetFileName);
@@ -89,36 +89,36 @@ public class MergeFileSorter : IFileSorter
 
     private async Task MergeFilesAsync(string file0, string file1, int idx, int level)
     {
-        using var streamReaderfile0 = new StreamReader(file0);
-        using var streamReaderfile1 = new StreamReader(file1);
+        using var streamReaderFile0 = new StreamReader(file0);
+        using var streamReaderFile1 = new StreamReader(file1);
         string fileName = $"{PartialFileName}_level_{level + 1}_part_{idx}.tmp";
         string fullPath = IsUseDirectoryToSaveTempFiles ? Path.Combine(GetTempLevelDirectory(level + 1), fileName) : fileName;
         using var streamWriter = new StreamWriter(fullPath);
 
-        string? file0String = await streamReaderfile0.ReadLineAsync();
-        string? file1String = await streamReaderfile1.ReadLineAsync();
+        string? file0String = await streamReaderFile0.ReadLineAsync();
+        string? file1String = await streamReaderFile1.ReadLineAsync();
 
         while (file0String != null || file1String != null)
         {
             if (file0String == null)
             {
                 await streamWriter.WriteLineAsync(file1String);
-                file1String = await streamReaderfile1.ReadLineAsync();
+                file1String = await streamReaderFile1.ReadLineAsync();
             }
             else if (file1String == null)
             {
                 await streamWriter.WriteLineAsync(file0String);
-                file0String = await streamReaderfile0.ReadLineAsync();
+                file0String = await streamReaderFile0.ReadLineAsync();
             }
             else if (Sorter.Compare(file0String, file1String) > 0)
             {
                 await streamWriter.WriteLineAsync(file1String);
-                file1String = await streamReaderfile1.ReadLineAsync();
+                file1String = await streamReaderFile1.ReadLineAsync();
             }
             else
             {
                 await streamWriter.WriteLineAsync(file0String);
-                file0String = await streamReaderfile0.ReadLineAsync();
+                file0String = await streamReaderFile0.ReadLineAsync();
             }
         }
     }

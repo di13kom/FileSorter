@@ -12,7 +12,7 @@ public class MergeFileSorterUnitTests
     private readonly string _patternFileName = "sampleTestFile.txt";
     private readonly string _patternSortedFileName = "sampleTestFile_sorted.txt";
     private string MsSortedIntermediateFiles() => $"{_mergePrefix}{_patternFileName}*{_mergeSortedSuffix}";
-    private string GetPath(string fileName) => Path.Combine(TestContext.CurrentContext.WorkDirectory, fileName);
+    private static string GetPath(string fileName) => Path.Combine(TestContext.CurrentContext.WorkDirectory, fileName);
 
     [SetUp]
     public void Setup()
