@@ -29,7 +29,7 @@ public class BubbleFileSorter : IFileSorter
     /// <inheritdoc/>
     public async Task SortFileAsync(CancellationToken token)
     {
-        bool IsReplaceOccured = true;
+        bool isReplaceOccured = true;
         using FileStream fileStream = new FileStream(_fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
         fileStream.Seek(StartFileOffset, SeekOrigin.Begin);
 
@@ -52,10 +52,10 @@ public class BubbleFileSorter : IFileSorter
 
             if (string1 is null || curPos == lastSortedPosition)
             {
-                if (IsReplaceOccured == true)
+                if (isReplaceOccured == true)
                 {
                     lastSortedPosition = preString1Position;
-                    IsReplaceOccured = false;
+                    isReplaceOccured = false;
                     fileStream.Seek(StartFileOffset, SeekOrigin.Begin);
                     streamReader.DiscardBufferedData();
 
@@ -73,7 +73,7 @@ public class BubbleFileSorter : IFileSorter
 
             if (_lineComparer.Compare(string0, string1) > 0)
             {
-                IsReplaceOccured = true;
+                isReplaceOccured = true;
                 fileStream.Seek(preString0position, SeekOrigin.Begin);
 
                 await streamWriter.WriteLineAsync(string1);

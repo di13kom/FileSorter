@@ -40,8 +40,8 @@ public class CustomLineComparer : ICustomLineComparer
     /// - If 0, numberStr0 equals numberStr1.
     /// - If greater than 0, numberStr0 is greater than numberStr1.
     /// </returns>
-    /// <enumberStr0ception cref="ArgumentException">Exception on `Int32` parse error.</exception>
-    private int CompareNumbers(ReadOnlySpan<char> numberStr0, ReadOnlySpan<char> numberStr1)
+    /// <exception cref="ArgumentException">Exception on `Int32` parse error.</exception>
+    private static int CompareNumbers(ReadOnlySpan<char> numberStr0, ReadOnlySpan<char> numberStr1)
     {
         if (int.TryParse(numberStr0, out int number0) && int.TryParse(numberStr1, out int number1))
         {

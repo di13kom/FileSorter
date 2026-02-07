@@ -53,7 +53,7 @@ public class MergeFileSorter : IFileSorter
         {
             string file0 = targetFiles[i * 2];
             string file1 = targetFiles[i * 2 + 1];
-            await MergeFilesAsync(file0, file1, i, level);
+            await MergeFilesAsync(file0, file1, i, level, token);
             if (!IsUseDirectoryToSaveTempFiles)
             {
                 File.Delete(file0);
@@ -87,7 +87,7 @@ public class MergeFileSorter : IFileSorter
         File.Move(targetFileName, fullPath);
     }
 
-    private async Task MergeFilesAsync(string file0, string file1, int idx, int level)
+    private async Task MergeFilesAsync(string file0, string file1, int idx, int level, CancellationToken token)
     {
         using var streamReaderFile0 = new StreamReader(file0);
         using var streamReaderFile1 = new StreamReader(file1);
@@ -95,30 +95,30 @@ public class MergeFileSorter : IFileSorter
         string fullPath = IsUseDirectoryToSaveTempFiles ? Path.Combine(GetTempLevelDirectory(level + 1), fileName) : fileName;
         using var streamWriter = new StreamWriter(fullPath);
 
-        string? file0String = await streamReaderFile0.ReadLineAsync();
-        string? file1String = await streamReaderFile1.ReadLineAsync();
+        string? file0String = await streamReaderFile0.ReadLineAsync(token);
+        string? file1String = await streamReaderFile1.ReadLineAsync(token);
 
-        while (file0String != null || file1String != null)
+        while (file0String != null || file1String != null || !token.IsCancellationRequested)
         {
             if (file0String == null)
             {
                 await streamWriter.WriteLineAsync(file1String);
-                file1String = await streamReaderFile1.ReadLineAsync();
+                file1String = await streamReaderFile1.ReadLineAsync(token);
             }
             else if (file1String == null)
             {
                 await streamWriter.WriteLineAsync(file0String);
-                file0String = await streamReaderFile0.ReadLineAsync();
+                file0String = await streamReaderFile0.ReadLineAsync(token);
             }
             else if (Sorter.Compare(file0String, file1String) > 0)
             {
                 await streamWriter.WriteLineAsync(file1String);
-                file1String = await streamReaderFile1.ReadLineAsync();
+                file1String = await streamReaderFile1.ReadLineAsync(token);
             }
             else
             {
                 await streamWriter.WriteLineAsync(file0String);
-                file0String = await streamReaderFile0.ReadLineAsync();
+                file0String = await streamReaderFile0.ReadLineAsync(token);
             }
         }
     }
@@ -167,6 +167,4 @@ public class MergeFileSorter : IFileSorter
             await streamWriter.FlushAsync();
         }
     }
-
-
 }
